@@ -8,14 +8,10 @@
 
 import UIKit
 
-class ContactsRouter {
+struct ContactsRouter {
     let navigationController: UINavigationController
 
-    init(navigationController: UINavigationController) {
-        self.navigationController = navigationController
-    }
-
-    @objc func showNewContactDetail() {
+    func showNewContactDetail() {
         showContactDetail(nil)
     }
 

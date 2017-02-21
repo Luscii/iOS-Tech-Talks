@@ -49,13 +49,17 @@ class ContactsViewController: UIViewController {
 
         // Subscribe to selected item events.
         _ = tableView.rx.itemSelected.subscribe(onNext: { indexPath in
-            contactsPresenter.contactDidSelected(at: indexPath.row)
+            self.tableView.deselectRow(at: indexPath, animated: true)
+            self.contactsPresenter.contactDidSelected(at: indexPath.row)
         }).disposed(by: self.disposeBag)
     }
 
     private func setupAddButton() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add,
-                                                            target: contactsPresenter.contactsRouter,
-                                                            action: #selector(ContactsRouter.showNewContactDetail))
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: contactsPresenter.contactsRouter, action: nil)
+        navigationItem.rightBarButtonItem = addButton
+
+        addButton.rx.tap.subscribe(onNext: {
+            self.contactsPresenter.contactsRouter.showNewContactDetail()
+        }).disposed(by: self.disposeBag)
     }
 }

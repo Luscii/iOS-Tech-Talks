@@ -64,21 +64,25 @@ class ContactDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        title = contactViewModel.fullName
 
-        saveButton.addTarget(self, action: #selector(saveAndDismiss), for: .touchUpInside)
         firstNameTextField.text = contactViewModel.firstName
         lastNameTextField.text = contactViewModel.lastName
-
+        setupSaveButton()
+    }
+    
+    private func setupSaveButton() {
         // Disable saveButton, if textfields are empty.
         let isEnabled = Observable.combineLatest(firstNameTextField.rx.text, lastNameTextField.rx.text) { (firstName, lastName) -> Bool in
             return (firstName?.characters.count)! > 0 || (lastName?.characters.count)! > 0
         }
-
+        
         isEnabled.bindTo(saveButton.rx.isEnabled).addDisposableTo(disposeBag)
-    }
-
-    func saveAndDismiss() {
-        contactViewModel.update(firstName: firstNameTextField.text!, lastName: lastNameTextField.text!)
-        _ = navigationController?.popViewController(animated: true)
+        
+        // Button tap.
+        saveButton.rx.tap.subscribe(onNext: {
+            self.contactViewModel.update(firstName: self.firstNameTextField.text!, lastName: self.lastNameTextField.text!)
+            _ = self.navigationController?.popViewController(animated: true)
+        }).disposed(by: self.disposeBag)
     }
 }
